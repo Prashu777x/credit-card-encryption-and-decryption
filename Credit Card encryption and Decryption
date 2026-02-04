@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mastercard Client Encryption | Java Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        pre { background-color: #1e293b; color: #e2e8f0; padding: 1rem; border-radius: 0.5rem; overflow-x: auto; }
+        .tab-active { border-bottom: 2px solid #eb001b; color: #eb001b; }
+        .mc-red { color: #eb001b; }
+        .mc-orange { color: #f79e1b; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans">
+
+    <nav class="bg-white border-b sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <div class="flex">
+                    <div class="w-6 h-6 rounded-full bg-[#eb001b] opacity-80"></div>
+                    <div class="w-6 h-6 rounded-full bg-[#f79e1b] -ml-3 opacity-80"></div>
+                </div>
+                <span class="font-bold text-xl tracking-tight">Mastercard <span class="text-slate-500 font-light">Developers</span></span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#setup" class="hover:text-red-600">Setup</a>
+                <a href="#jwe" class="hover:text-red-600">JWE Guide</a>
+                <a href="#interceptors" class="hover:text-red-600">Interceptors</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-4 py-12">
+        
+        <header class="mb-16">
+            <h1 class="text-4xl font-extrabold mb-4">Client Encryption Java</h1>
+            <p class="text-lg text-slate-600">Library for Mastercard API compliant payload encryption and decryption using JWE and Field Level Encryption (FLE).</p>
+            <div class="mt-6 flex space-x-3">
+                <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold">Java 8+</span>
+                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Maven Central</span>
+                <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">MIT License</span>
+            </div>
+        </header>
+
+        <section class="mb-16 bg-white p-8 rounded-2xl shadow-sm border">
+            <h2 class="text-2xl font-bold mb-6">Encryption Flow</h2>
+            
+            <p class="mt-4 text-sm text-slate-500 italic text-center">Standard JWE structure used by the library: Header, Key, IV, Ciphertext, and Tag.</p>
+        </section>
+
+        <section id="setup" class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-box-open mr-3 mc-red"></i> 1. Add Dependency
+            </h2>
+            <div class="space-y-4">
+                <p class="text-slate-600 font-medium">Maven (pom.xml)</p>
+                <pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;com.mastercard.developer&lt;/groupId&gt;
+    &lt;artifactId&gt;client-encryption&lt;/artifactId&gt;
+    &lt;version&gt;1.7.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+            </div>
+        </section>
+
+        <section id="jwe" class="mb-16">
+            <h2 class="text-2xl font-bold mb-6 flex items-center">
+                <i class="fas fa-lock mr-3 mc-orange"></i> 2. Configure JWE
+            </h2>
+            <p class="mb-4 text-slate-600">Define which fields in your JSON payload should be encrypted using JSONPath.</p>
+            
+            <pre><code>JweConfig config = JweConfigBuilder.aJweEncryptionConfig()
+    .withEncryptionCertificate(encryptionCertificate)
+    .withDecryptionKey(decryptionKey)
+    .withEncryptionPath("$.path.to.sensitive", "$.path.to.encrypted")
+    .withEncryptedValueFieldName("encryptedValue")
+    .build();
+
+// Execute Encryption
+String encryptedPayload = JweEncryption.encryptPayload(payload, config);</code></pre>
+        </section>
+
+        <section id="interceptors" class="mb-16">
+            <div class="bg-slate-900 text-white p-8 rounded-2xl">
+                <h2 class="text-2xl font-bold mb-4">OkHttp Integration</h2>
+                <p class="text-slate-400 mb-6">Automate encryption using interceptors for API clients.</p>
+                <pre class="bg-slate-800 border border-slate-700"><code>client.setHttpClient(
+    client.getHttpClient().newBuilder()
+        .addInterceptor(OkHttpEncryptionInterceptor.from(config))
+        .addInterceptor(new OkHttpOAuth1Interceptor(consumerKey, signingKey))
+        .build()
+);</code></pre>
+            </div>
+        </section>
+
+        <footer class="text-center py-12 border-t text-slate-400 text-sm">
+            <p>© 2026 Mastercard Technical Documentation. For internal use only.</p>
+            <div class="mt-4 flex justify-center space-x-4">
+                <a href="https://github.com/Mastercard/client-encryption-java" class="hover:text-slate-600"><i class="fab fa-github mr-1"></i> Repository</a>
+                <a href="https://developer.mastercard.com" class="hover:text-slate-600"><i class="fas fa-globe mr-1"></i> Portal</a>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
